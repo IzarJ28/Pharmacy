@@ -6,7 +6,7 @@ include('sidebar.php');
 
 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (isset($_POST['Save'])) {
     $category_name = $_POST['category_name'];
     $med_name = $_POST['med_name'];
     $med_type = $_POST['med_type'];
@@ -31,11 +31,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
-
-
 }
 
 
+
+if (isset($_POST['editSubmit'])) {
+    $itemId = $_POST['editItemId'];
+    $category_name = $_POST['category_name'];
+    $med_type = $_POST['med_type'];
+    $description = $_POST['description'];
+    $price = $_POST['price'];
+
+
+    $query = "UPDATE med_inventory SET 
+    category_name = '$category_name',
+    med_type = '$med_type',
+    description ='$description',
+    price = '$price' WHERE id = '$itemId'
+    ";
+
+    if ($conn->query($query) === TRUE) {
+        echo '<script>alert("Item updated successfully!");</script>';
+    } else {
+        echo '<script>alert("Error: ' . $query . ' ' . $conn->error . '");</script>';
+    }
+
+}
+
+if (isset($_POST['deleteSubmit'])) {
+    $itemId = $_POST['deleteItemId'];
+
+    // Perform your delete query here
+    $query = "DELETE FROM med_inventory WHERE id = '$itemId'";
+    if ($conn->query($query) === TRUE) {
+        echo '<script>alert("Item deleted successfully!");</script>';
+    } else {
+        echo '<script>alert("Error deleting item: ' . mysqli_error($conn) . '");</script>';
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -277,8 +310,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input class="pr" type="price" id="price" name="price" required>
 
             <br><br><br>
-            <button style="margin-top: px; width:100%; background-color: lightblue;" type="submit"
-                value="Save">Save</button>
+            <button style="margin-top: px; width:100%; background-color: lightblue;" type="submit" value="Save"
+                name="Save">Save</button>
 
         </form>
 
@@ -320,7 +353,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo '<td>';
                 echo '<button class="editButton" style="background-color: green; color: white; padding: 5px 10px;" onclick="openEditModal(' . $row['id'] . ')">Edit</button>'; // Green Edit button
                 echo ' ';
-                echo '<button class="deleteButton" style="background-color: red; color: white; padding: 5px 10px;">Delete</button>'; // Red Delete button
+                echo '<button class="deleteButton" style="background-color: red; color: white; padding: 5px 10px;" onclick="openDeleteModal(' . $row['id'] . ')">Delete</button>'; // Red Delete button
                 echo '</td>';
                 echo '</tr>';
                 $n++;
@@ -331,8 +364,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <span class="close" onclick="closeModal('editModal<?php echo $row['id'] ?>')">&times;</span>
                         <h2>Edit Item</h2>
                         <!-- Edit Form -->
-                        <form action="edit_item.php" method="post">
-                            <input type="hidden" id="editItemId" name="editItemId" value="">
+                        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+                            <input type="hidden" id="editItemId" name="editItemId" value="<?php echo $row['id'] ?>">
 
                             <label for="med_name">Medicine name:</label>
                             <input type="text" name="med_name" value="<?php echo $row['med_name']; ?>" readonly />
@@ -387,37 +420,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <!-- Delete Modal -->
-                <div id="deleteModal" class="modal">
-                    <div class="modal-content">
-                        <span class="close" onclick="closeModal('deleteModal')">&times;</span>
-                        <h2>Delete Item</h2>
-                        <p>Are you sure you want to delete this item?</p>
-                        <button onclick="deleteItem()">Delete</button>
-                    </div>
+                <div id="deleteModal<?php echo $row['id'] ?>" class="modal">
+                    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+                        <div class="modal-content">
+                            <input type="hidden" name="deleteItemId" value="<?php echo $row['id'] ?>"/>
+                            <span class="close" onclick="closeModal('deleteModal<?php echo $row['id'] ?>')">&times;</span>
+                            <h2>Delete Item</h2>
+                            <p>Are you sure you want to delete this item?</p>
+                            <button onclick="closeModal('deleteModal<?php echo $row['id'] ?>')">NO</button>
+                            <button name="deleteSubmit">YES</button>
+
+                        </div>
+                    </form>
                 </div>
 
                 <?php
-                // Include your database connection here
-            
-                if (isset($_POST['editSubmit'])) {
-                    $itemId = $_POST['editItemId'];
-                    $newName = $_POST['editName'];
-
-                    // Update the database with the new data (replace this with your actual database update logic)
-                    // $sql = "UPDATE your_table SET name = '$newName' WHERE id = $itemId";
-                    // $result = $mysqli->query($sql);
-            
-                    // Check if the update was successful and handle accordingly
-                    if ($result) {
-                        echo '<script>alert("Item updated successfully!");</script>';
-                    } else {
-                        echo '<script>alert("Error updating item!");</script>';
-                    }
-                }
-
-                // Redirect back to the original page after processing the form
-                // header("Location: original_page.php");
-                // exit();
             }
             ?>
         </table>
@@ -475,6 +492,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         modal.style.transform = 'translate(-50%, -50%)';
         modal.style.top = '50%';
         modal.style.left = '50%';
+    }
+    function openDeleteModal(modalId) {
+        var modal = document.getElementById('deleteModal' + modalId);
+        modal.style.display = 'block';
+        modal.style.transform = 'translate(-50%, -50%)';
+        modal.style.top = '50%';
+        modal.style.left = '50%';
+        modal.style.height = '300px';
     }
 
     function closeModal(modalId) {
