@@ -19,12 +19,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result->num_rows > 0) {
         echo '<script>alert("Medicine already exists.");</script>';
     } else {
-        $query = "INSERT INTO med_inventory (med_name,category_name,med_type,description,price) VALUES ('$med_name','$category_name','$med_type','$description','$price')";
-
-        if ($conn->query($query) === TRUE) {
-
+        if ($price < 1) {
+            echo '<script>alert("Invalid price!");</script>';
         } else {
-            echo '<script>alert("Error: ' . $query . ' ' . $conn->error . '");</script>';
+            $query = "INSERT INTO med_inventory (med_name,category_name,med_type,description,price) VALUES ('$med_name','$category_name','$med_type','$description','$price')";
+
+            if ($conn->query($query) === TRUE) {
+
+            } else {
+                echo '<script>alert("Error: ' . $query . ' ' . $conn->error . '");</script>';
+            }
         }
     }
 
