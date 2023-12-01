@@ -117,11 +117,11 @@
         </div>
     </div>
 
-    <script>
+    <!-- <script>
         function reloadPage() {
             location.reload(true); // Force a page reload, clearing the cache
         }
-    </script>
+    </script> -->
 
 
 

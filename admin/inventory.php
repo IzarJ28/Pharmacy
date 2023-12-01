@@ -291,7 +291,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <table class="registered_table">
             <tr class="registered_tr">
-                <th>Id</th>
+                <th>#</th>
+                <th>Item Code</th>
                 <th>Name</th>
                 <th>Category</th>
                 <th>Type</th>
@@ -302,8 +303,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php
             // Loop through the rows in the result set
+            $n = 1;
             while ($row = $result->fetch_assoc()) {
                 echo '<tr>';
+                echo '<td>' . $n . '</td>';
                 echo '<td>' . $row['id'] . '</td>';
                 echo '<td>' . $row['med_name'] . '</td>';
                 echo '<td>' . $row['category_name'] . '</td>';
@@ -311,11 +314,106 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo '<td>' . $row['description'] . '</td>';
                 echo '<td>' . $row['price'] . '</td>';
                 echo '<td>';
-                echo '<button style="background-color: green; color: white; padding: 5px 10px;">Edit</button>'; // Green Edit button
+                echo '<button class="editButton" style="background-color: green; color: white; padding: 5px 10px;" onclick="openEditModal(' . $row['id'] . ')">Edit</button>'; // Green Edit button
                 echo ' ';
-                echo '<button style="background-color: red; color: white; padding: 5px 10px;">Delete</button>'; // Red Delete button
+                echo '<button class="deleteButton" style="background-color: red; color: white; padding: 5px 10px;">Delete</button>'; // Red Delete button
                 echo '</td>';
                 echo '</tr>';
+                $n++;
+                ?>
+
+                <div id="editModal<?php echo $row['id'] ?>" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal('editModal<?php echo $row['id'] ?>')">&times;</span>
+                        <h2>Edit Item</h2>
+                        <!-- Edit Form -->
+                        <form action="edit_item.php" method="post">
+                            <input type="hidden" id="editItemId" name="editItemId" value="">
+
+                            <label for="med_name">Medicine name:</label>
+                            <input type="text" name="med_name" value="<?php echo $row['med_name']; ?>" readonly />
+                            <br>
+                            <br>
+                            <label for="category_name">Category:&nbsp;</label>
+                            <select name="category_name">
+                                <option>
+                                    <?php echo $row['category_name']; ?>
+                                </option>
+                                <?php
+                                $med_category = mysqli_query($conn, "SELECT * FROM med_category");
+                                while ($c = mysqli_fetch_array($med_category)) {
+                                    ?>
+                                    <option value="<?php echo $c['category_name'] ?>">
+                                        <?php echo $c['category_name'] ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                            <br><br>
+
+                            <label for="med_type">Type:</label>
+                            <select name="med_type">
+                                <option>
+                                    <?php echo $row['med_type']; ?>
+                                </option>
+                                <?php
+                                $med_type = mysqli_query($conn, "SELECT * FROM med_type");
+                                while ($c = mysqli_fetch_array($med_type)) {
+                                    ?>
+                                    <option value="<?php echo $c['med_type'] ?>">
+                                        <?php echo $c['med_type'] ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                            <br>
+
+                            <label for="description"><br>Description:</label>
+                            <textarea class="des" id="description" name="description" rows="4"
+                                placeholder="Enter your description here..."><?php echo $row['description']; ?></textarea>
+                            <br>
+
+                            <label for="price"><br>Product Price:</label>
+                            <input class="pr" type="price" id="price" name="price" value="<?php echo $row['price']; ?>"
+                                required>
+
+                            <br>
+                            <br>
+                            <button type="submit" name="editSubmit" style="float:right;">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Delete Modal -->
+                <div id="deleteModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal('deleteModal')">&times;</span>
+                        <h2>Delete Item</h2>
+                        <p>Are you sure you want to delete this item?</p>
+                        <button onclick="deleteItem()">Delete</button>
+                    </div>
+                </div>
+
+                <?php
+                // Include your database connection here
+            
+                if (isset($_POST['editSubmit'])) {
+                    $itemId = $_POST['editItemId'];
+                    $newName = $_POST['editName'];
+
+                    // Update the database with the new data (replace this with your actual database update logic)
+                    // $sql = "UPDATE your_table SET name = '$newName' WHERE id = $itemId";
+                    // $result = $mysqli->query($sql);
+            
+                    // Check if the update was successful and handle accordingly
+                    if ($result) {
+                        echo '<script>alert("Item updated successfully!");</script>';
+                    } else {
+                        echo '<script>alert("Error updating item!");</script>';
+                    }
+                }
+
+                // Redirect back to the original page after processing the form
+                // header("Location: original_page.php");
+                // exit();
             }
             ?>
         </table>
@@ -336,3 +434,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </body>
 
 </html>
+
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        /* Semi-transparent black background */
+        z-index: 1;
+    }
+
+    .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fefefe;
+        padding: 20px;
+        border: 1px solid #888;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
+        width: 50%;
+        max-width: 400px;
+        height: 60%;
+    }
+</style>
+
+<script>
+    function openEditModal(modalId) {
+        var modal = document.getElementById('editModal' + modalId);
+        modal.style.display = 'block';
+        modal.style.transform = 'translate(-50%, -50%)';
+        modal.style.top = '50%';
+        modal.style.left = '50%';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Add more JavaScript code as needed
+</script>
