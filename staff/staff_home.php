@@ -147,7 +147,7 @@ include('header.php');
     </div>
     <section>
         <div id="product-list">
-            <h2>MEDICINE LISTS</h2>
+            <h2 style="background-color: #45a123;padding:10px;color:#fff;">MEDICINE LISTS</h2>
             <input type="text" id="search" placeholder="Search items...">
             <ul id="products">
                 <?php
@@ -163,7 +163,7 @@ include('header.php');
         </div>
 
         <div id="cart">
-            <h2>JEROS POS</h2>
+            <h2 style="background-color: #45a123;padding:10px;color:#fff;width:160%;">JEROS POS</h2>
             <h1>Total: ₱<span id="total">0.00</span></h1>
             <ul id="cart-items"></ul>
             <button onclick="checkout()">SAVE AND PRINT</button>
