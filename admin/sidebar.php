@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 
@@ -57,7 +58,7 @@
 
 
         .sidebar {
-            top:0;
+            top: 0;
             background-color: #333;
             /* Sidebar background color */
             color: #fff;
@@ -74,7 +75,7 @@
         .sidebar ul {
             list-style: none;
             padding: 20px;
-            margin-top:50px;
+            margin-top: 50px;
         }
 
         .sidebar ul li {

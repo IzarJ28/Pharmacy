@@ -6,7 +6,6 @@
         body{
         margin: 0;
         padding: 0;
-        position: fixed;
         
     }
 
@@ -18,7 +17,8 @@
             color: #fff;
             padding: 10px 20px;
             align-items: center;
-            width: 1325px;
+            width: 100%;
+            top:0;
 
 
         }
@@ -41,7 +41,7 @@
             padding: 5px 10px;
             cursor: pointer;
             text-decoration: none;
-            margin-left: 10px; /* Add margin to separate the buttons */
+            margin-right: 50px; /* Add margin to separate the buttons */
             transition: .1s;
         }
 
@@ -62,19 +62,10 @@
         <h1 onclick="reloadPage()">JEROS Drugstore</h1>
         <div class="nav-btn-container">
            
-            <a href="index.php" class="nav-btn">Logout</a>
+            <a href="../index.php" class="nav-btn">Logout</a>
         </div>
     </div>
-
-    <script>
-        function reloadPage() {
-            location.reload(true); // Force a page reload, clearing the cache
-        }
-    </script>
 
     
 
   
-
-</body>
-</html>

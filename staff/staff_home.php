@@ -1,323 +1,269 @@
 <?php
 include('connection.php');
- include ('header.php');
-  
- 
-
-
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $category_name= $_POST['category_name'];
-    $med_name = $_POST['med_name'];
-    $med_type = $_POST['med_type'];
-    $description = $_POST['description'];
-    $price = $_POST['price'];
-   
-   
-$check_username_query = "SELECT * FROM med_inventory WHERE med_name='$med_name'";
-    $result = $conn->query($check_username_query);
-    if ($result->num_rows > 0) {
-        echo '<script>alert("Medicine already exists.");</script>';
-    }else{
-        $query = "INSERT INTO med_inventory (med_name,category_name,med_type,description,price) VALUES ('$med_name','$category_name','$med_type','$description','$price')";
-
-        if ($conn->query($query) === TRUE) {
-            
-        } else {
-            echo '<script>alert("Error: ' . $query . ' ' . $conn->error . '");</script>';
-        }
-    }
-
-    
-} 
-
-
+include('header.php');
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Medicine List</title>
-  
-  
-   
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JEROS POS</title>
     <style>
-        .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-content {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        width: 700px;
-        height: 400px;
-      
-    }
-
-    .close {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .form-center{
-      margin-top: 10px;
-    }
-    .form-center{
-        margin-top: 60px;
-        width:100%;
-
-    }
-    th{
-      padding: 10px;
-      text-align: left;
-      margin-left: 10px;
-    }
-
-        .form-container{
-            width: 25%;
-            margin-top: 5.45%;
-            margin-left: 24%;
-            border-radius: 10px;
-            padding: 4px;
-            background-color: #E5E7E9 ;
-            float: left;
-
-
-        } 
-
-        .form-container label {
-           
-            margin-top: 10px;
-            text-align: left;
-
-        }
-
-        .form-container input[type="text"],
-        .form-container input[type="password"],
-        .form-container select {
-            width: 200px;
-            padding: 5px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            margin-left: 15%;
-        }
-
-        .form-container input[type="submit"] {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 3px;
-            padding: 10px;
-            cursor: pointer;
+        body {
+            font-family: 'Arial', sans-serif;
             margin: 0;
-            width: 100%;
+            padding: 0;
+            background-color: #f4f4f4;
         }
-        h2.form_name{
-            border-radius: 3px;
-            background-color:  #b3ffb3;
-            padding-top: 11px;
-            text-align: center;
+
+        section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1000px;
+            margin: 20px auto;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #product-list,
+        #cart,
+        #receipt {
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
             margin: 0;
-            width: 100%;
-            margin-bottom: 15px;
-            border-bottom: 1px solid black;
-            padding-bottom: 15px;
-
         }
 
-
-
-         table.registered_table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            margin-left: auto ;
-            margin-right: auto;
-
-         }
-
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-            padding-left: 5px;
-            text-align: center;
-            border: .5px solid dimgray;
-
-         }
-
-         button {
-            cursor: pointer;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 4px;
-        }
-
-        .registered_table .edit-button {
-            background-color: green;
-            color: white;
-        }
-
-        .registered_table .delete-button {
-            background-color: red;
-            color: white;
-        }
-        h2.user_list{
-            background-color: #b3ffb3;
-            width: 100%;
-            margin: 0;
+        li {
             padding: 15px;
-            margin-bottom: 15px;
-          
-            border-bottom: 1px solid black;
+            margin: 10px 0;
+            background-color: #eee;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 5px;
         }
 
-    input.num{
-        padding: 3px;
-        width: 200px;
-    }
-    .des, .pr{
-        width: 70%;
-        margin-left: 15%;
-     }
-    .pr{
-        padding: 3.5px;
-    }
+        li:hover {
+            background-color: #ddd;
+        }
 
-    </style>
-</head>
-<body>
-    
- 	<?php
-        $query = "SELECT mi.id, m.med_name as med_name, mc.category_name as category_name, mt.med_type as med_type, mi.description, mi.price 
-          FROM med_inventory mi
-          JOIN medicines m ON mi.med_name = m.id
-          JOIN med_category mc ON mi.category_name = mc.id
-          JOIN med_type mt ON mi.med_type = mt.id";		
-    ?>
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
 
-    <div  style="margin-top: 20%;" class="med_search">
-    <form method="GET" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-        <label for="search_med">Search Medicine:</label>
-        <input type="text" id="search_med" name="search_med">
-        <input type="submit" value="Search">
-    </form>
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+        }
 
-    <!-- Display selected medicine information in a table -->
-    <table class="searched_table">
-        <!-- Add table headers for Medicine name, Quantity, and Price -->
-        <tr>
-            <th>Medicine Name</th>
-            <th>Quantity</th>
-            <th>Price</th>
-        </tr>
+        button:hover {
+            background-color: #45a049;
+        }
 
-        <?php
-        // Check if the search parameter is set
-        if (isset($_GET['search_med'])) {
-            // Perform a search based on the entered medicine name
-            $searched_med = $_GET['search_med'];
-            $query = "SELECT * FROM med_inventory WHERE med_name LIKE '%$searched_med%'";
-            $result = $conn->query($query);
+        #cart-items,
 
-            // Display the search results in the table
-            while ($row = $result->fetch_assoc()) {
-                echo '<tr>';
-                echo '<td>' . $row['med_name'] . '</td>';
-                echo '<td>'; // This column will contain the quantity input field
-                echo '<input type="number" name="quantity_' . $row['id'] . '" placeholder="Enter quantity" />';
-                echo '</td>';
-                echo '<td>' . $row['price'] . '</td>';
-                echo '</tr>';
+        #cart-items{
+            width:400px;
+        }
+        #receipt-items {
+            margin-top: 10px;
+        }
+
+        #total,
+        #receipt-total {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        #receipt {
+            display: none;
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px;
+        }
+
+        #receipt-container {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }   
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+        }
+
+        @media print {
+            #receipt {
+                display: block;
+            }
+
+            body * {
+                visibility: hidden;
+            }
+
+            #receipt,
+            #receipt * {
+                visibility: visible;
             }
         }
-        ?>
-    </table>
-</div>
-<form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-    <!-- Add other form fields here for additional information if needed -->
+    </style>
+</head>
 
-    <!-- Displayed above in the search form -->
-    <div class="med_search">
-        <!-- This table will display the selected medicine's information -->
-        <table class="searched_table">
-            <!-- Table headers are added in the previous code snippet -->
-        </table>
+<body>
+    <br><br><br>
 
-        <!-- Add a button to submit the quantity input -->
-        <input type="submit" value="Submit Quantity">
+
+    <div id="receipt">
+        <div id="receipt-container">
+            <h2>Receipt</h2>
+            <h1>Total: ₱<span id="receipt-total">0.00</span></h1>
+            <ul id="receipt-items"></ul>
+        </div>
     </div>
-</form>
+    <section>
+        <div id="product-list">
+            <h2>MEDICINE LISTS</h2>
+            <input type="text" id="search" placeholder="Search items...">
+            <ul id="products">
+                <?php
+                $query = "SELECT * FROM med_inventory";
+                $result = $conn->query($query);
+                while ($row = $result->fetch_assoc()) {
 
+                    echo '<li data-name="' . $row['med_name'] . '" data-price="' . $row['price'] . '">' . $row['med_name'] . ' - ₱' . $row['price'] . '</li>';
+                }
+                ?>
+                <!-- Add more products as needed -->
+            </ul>
+        </div>
 
-	<div class="form-center">       
-   		<?php
-   	    		$query = "SELECT * FROM med_inventory";
-        		$result = $conn->query($query);
-    	?>
-    	<h2 class="user_list">PRODUCT LIST</h2>
-    
-       
-  		    <table  class="registered_table">
-            	<tr class="registered_tr">
-                	<th>Id</th>
-                	<th>Name</th>
-                	<th>Category</th>
-                	<th>Type</th>
-                	<th>Description</th>
-                	<th>Price</th>
-                	<th>Action</th> <!-- New column for buttons -->
-            	</tr>
-    
-    <?php
-    // Loop through the rows in the result set
-    while ($row = $result->fetch_assoc()) {
-        echo '<tr>';
-        echo '<td>' . $row['id']. '</td>';
-        echo '<td>' . $row['med_name'] . '</td>';
-        echo '<td>' . $row['category_name'] . '</td>';
-        echo '<td>' . $row['med_type'] . '</td>';
-        echo '<td>' . $row['description'] . '</td>';
-        echo '<td>' . $row['price'] . '</td>';
-        echo '<td>';
-        echo '<button style="background-color: green; color: white; padding: 5px 10px;">Edit</button>'; // Green Edit button
-        echo ' ';
-        echo '<button style="background-color: red; color: white; padding: 5px 10px;">Delete</button>'; // Red Delete button
-        echo '</td>';
-        echo '</tr>';
-    }
-    ?>
-</table>
-<br>
-<br>
+        <div id="cart">
+            <h2>JEROS POS</h2>
+            <h1>Total: ₱<span id="total">0.00</span></h1>
+            <ul id="cart-items"></ul>
+            <button onclick="checkout()">SAVE AND PRINT</button>
+        </div>
+    </section>
+    <footer>
+        &copy; 2023 JEROS POS System
+    </footer>
 
+    <script>
+        const products = document.querySelectorAll('#products li');
+        const cartItems = document.getElementById('cart-items');
+        const totalSpan = document.getElementById('total');
+        const receiptDiv = document.getElementById('receipt');
+        const receiptItems = document.getElementById('receipt-items');
+        const receiptTotalSpan = document.getElementById('receipt-total');
 
-</div>
+        function updateCart(item) {
+            const itemName = item.dataset.name;
+            const itemPrice = parseFloat(item.dataset.price);
+            const quantityInput = item.querySelector('.quantity-input');
+            const quantity = parseInt(quantityInput.value) || 0;
 
-    <?php
-    $conn->close();
-    ?>
-        
-    </div>
+            const itemTotal = itemPrice * quantity;
 
-    
-    
+            const existingCartItem = cartItems.querySelector(`li[data-name="${itemName}"]`);
+            if (existingCartItem) {
+                // Update existing cart item
+                const existingQuantity = parseInt(existingCartItem.dataset.quantity) || 0;
+                const newQuantity = existingQuantity + quantity;
+                existingCartItem.dataset.quantity = newQuantity;
+                existingCartItem.textContent = `${itemName} - ₱${itemPrice.toFixed(2)} x ${newQuantity} = ₱${(itemTotal + parseFloat(existingCartItem.dataset.total || 0)).toFixed(2)}`;
+            } else {
+                // Add new cart item
+                const li = document.createElement('li');
+                li.dataset.name = itemName;
+                li.dataset.total = itemTotal.toFixed(2);
+                li.dataset.quantity = quantity;
+                li.textContent = `${itemName} - ₱${itemPrice.toFixed(2)} x ${quantity} = ₱${itemTotal.toFixed(2)}`;
+                cartItems.appendChild(li);
+            }
+
+            updateTotal();
+        }
+
+        function updateTotal() {
+            let total = 0;
+            cartItems.querySelectorAll('li').forEach(cartItem => {
+                total += parseFloat(cartItem.dataset.total || 0);
+            });
+            totalSpan.textContent = total.toFixed(2);
+        }
+
+        function updateReceipt() {
+            let total = 0;
+            receiptItems.innerHTML = '';
+            cartItems.querySelectorAll('li').forEach(cartItem => {
+                const itemName = cartItem.dataset.name;
+                const itemPrice = parseFloat(Array.from(products).find(product => product.dataset.name === itemName).dataset.price);
+                const quantity = parseInt(cartItem.dataset.quantity) || 0;
+                const itemTotal = itemPrice * quantity;
+
+                const li = document.createElement('li');
+                li.textContent = `${itemName} - ₱${itemPrice.toFixed(2)} x ${quantity} = ₱${itemTotal.toFixed(2)}`;
+                receiptItems.appendChild(li);
+
+                total += itemTotal;
+            });
+            receiptTotalSpan.textContent = total.toFixed(2);
+        }
+
+        function checkout() {
+            updateReceipt();
+            receiptDiv.style.display = 'block';
+            window.print();
+            receiptDiv.style.display = 'none';
+        }
+
+        document.getElementById('search').addEventListener('input', () => {
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            products.forEach(product => {
+                const productName = product.dataset.name.toLowerCase();
+                const isVisible = productName.includes(searchTerm);
+                product.style.display = isVisible ? 'block' : 'none';
+            });
+        });
+
+        products.forEach(product => {
+            const quantityInput = document.createElement('input');
+            quantityInput.type = 'number';
+            quantityInput.min = 0;
+            quantityInput.value = 0;
+            quantityInput.className = 'quantity-input';
+            product.appendChild(quantityInput);
+
+            product.addEventListener('click', () => {
+                updateCart(product);
+            });
+        });
+    </script>
 </body>
+
 </html>
